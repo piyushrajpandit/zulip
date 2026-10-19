@@ -321,6 +321,35 @@ run_test("Enter key with text", ({mock_template}) => {
     assert.deepEqual(widget.items(), [items.blue, items.red, items.yellow]);
 });
 
+run_test("Enter key default-prevented", () => {
+    const info = set_up();
+    const config = info.config;
+    const items = info.items;
+    const $container = info.$container;
+
+    const widget = input_pill.create(config);
+    widget.appendValue("blue,red");
+
+    assert.deepEqual(widget.items(), [items.blue, items.red]);
+
+    const key_handler = $container.get_on_handler("keydown", ".input");
+
+    key_handler.call(
+        {
+            textContent: " invalid_item ",
+        },
+        {
+            key: "Enter",
+            preventDefault: noop,
+            stopPropagation: noop,
+            isDefaultPrevented: () => true,
+        },
+    );
+
+    assert.deepEqual(widget.items(), [items.blue, items.red]);
+    assert.ok(!$container.hasClass("invalid"));
+});
+
 run_test("insert_remove", ({mock_template}) => {
     mock_template("input_pill.hbs", true, (data, html) => {
         assert.equal(typeof data.display_value, "string");

@@ -356,6 +356,9 @@ export function create<ItemType extends {type: string}>(
             // which don't convert all of their text input to pills, to have
             // their own custom handlers of enter events.
             if (keydown_util.is_enter_event(e) && store.convert_to_pill_on_enter) {
+                if (e.isDefaultPrevented()) {
+                    return;
+                }
                 // regardless of the value of the input, the ENTER keyword
                 // should be ignored in favor of keeping content to one line
                 // always.
